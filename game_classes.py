@@ -5,6 +5,7 @@ from two_player_games.state import State
 
 
 class Hex(Game):
+    
     pass
 
 
