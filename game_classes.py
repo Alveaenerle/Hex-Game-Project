@@ -1,3 +1,4 @@
+from typing import Iterable
 from two_player_games.game import Game
 from two_player_games.move import Move
 from two_player_games.player import Player
@@ -23,24 +24,31 @@ class Hex(Game):
         self.first_player = first_player or Player(self.FIRST_PLAYER_DEFAULT_CHAR)
         self.second_player = second_player or Player(self.SECOND_PLAYER_DEFAULT_CHAR)
 
-        starting_board = [[False for j in range(size)] for i in range(size)]
+        starting_board = [[None for j in range(size)] for i in range(size)]
 
-        board_info = {
-            self.first_player.char: starting_board,
-            self.second_player.char: starting_board
-        }
-
-        state = HexState(size, self.first_player, self.second_player, board_info)
+        state = HexState(size, self.first_player, self.second_player, starting_board)
 
         super().__init__(state)
 
 
 class HexState(State):
-
+    ''' Class that represents a state in the Hex Game '''
     def __init__(self, current_player: Player, other_player: Player,
-                 board: dict(str, list(list(bool)))) -> None:
+                 board: list(list(str))) -> None:
+        ''' Creates the state. Do not call directly. '''
+
         self.board = board
         super().__init__(current_player, other_player)
+
+    def get_moves(self) -> Iterable["HexMove"]:
+        board = self.board
+        size = len(board)
+        moves = []
+        for i in range(size):
+            for j in range(size):
+                if board[i][j] is not None and board[i][j] is not None:
+                    moves.append(HexMove((i, j)))
+        return moves
 
 
 class HexMove(Move):
@@ -48,10 +56,8 @@ class HexMove(Move):
     Class that represents move in the hex game
 
     Variables:
-        player: player which did the move
         loc: coordinates of hex on the board as a tuple (line, column)
     '''
 
-    def __init__(self, player: Player, loc: tuple[int, int]) -> None:
-        self.player = player
+    def __init__(self, loc: tuple[int, int]) -> None:
         self.loc = loc
