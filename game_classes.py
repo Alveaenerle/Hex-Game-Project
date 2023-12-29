@@ -9,8 +9,8 @@ class Hex(Game):
     FIRST_PLAYER_DEFAULT_CHAR = '1'
     SECOND_PLAYER_DEFAULT_CHAR = '2'
 
-    def __init__(self, size: int=11,
-                 first_player: Player=None, second_player: Player=None):
+    def __init__(self, size: int = 11,
+                 first_player: Player = None, second_player: Player = None):
         '''
         Initializes game.
 
@@ -23,15 +23,24 @@ class Hex(Game):
         self.first_player = first_player or Player(self.FIRST_PLAYER_DEFAULT_CHAR)
         self.second_player = second_player or Player(self.SECOND_PLAYER_DEFAULT_CHAR)
 
-        state = HexState(size, self.first_player, self.second_player)
+        starting_board = [[False for j in range(size)] for i in range(size)]
+
+        board_info = {
+            self.first_player.char: starting_board,
+            self.second_player.char: starting_board
+        }
+
+        state = HexState(size, self.first_player, self.second_player, board_info)
 
         super().__init__(state)
 
-    pass
-
 
 class HexState(State):
-    pass
+
+    def __init__(self, current_player: Player, other_player: Player,
+                 board: dict(str, list(list(bool)))) -> None:
+        self.board = board
+        super().__init__(current_player, other_player)
 
 
 class HexMove(Move):
