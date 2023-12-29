@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Optional
 from two_player_games.game import Game
 from two_player_games.move import Move
 from two_player_games.player import Player
@@ -11,7 +11,7 @@ class Hex(Game):
     SECOND_PLAYER_DEFAULT_CHAR = '2'
 
     def __init__(self, size: int = 11,
-                 first_player: Player = None, second_player: Player = None):
+                 first_player: "HexPlayer" = None, second_player: "HexPlayer" = None):
         '''
         Initializes game.
 
@@ -21,8 +21,8 @@ class Hex(Game):
             second_player: the player that will go second (if None is passed, a player will be created)
         '''
 
-        self.first_player = first_player or Player(self.FIRST_PLAYER_DEFAULT_CHAR)
-        self.second_player = second_player or Player(self.SECOND_PLAYER_DEFAULT_CHAR)
+        self.first_player = first_player or HexPlayer(self.FIRST_PLAYER_DEFAULT_CHAR)
+        self.second_player = second_player or HexPlayer(self.SECOND_PLAYER_DEFAULT_CHAR)
 
         starting_board = [[None for j in range(size)] for i in range(size)]
 
@@ -33,7 +33,7 @@ class Hex(Game):
 
 class HexState(State):
     ''' Class that represents a state in the Hex Game '''
-    def __init__(self, current_player: Player, other_player: Player,
+    def __init__(self, current_player: "HexPlayer", other_player: "HexPlayer",
                  board: list(list(str))) -> None:
         ''' Creates the state. Do not call directly. '''
 
@@ -65,6 +65,45 @@ class HexState(State):
 
         return HexState(next_player, other_player, new_board)
 
+    def _take_hexes_around(self, starting_hex: "HexMove", player_char: str,
+                           queue: Iterable[tuple(int, int)]) -> Iterable[tuple(int, int)]:
+
+        size = len(self.board)
+        line = starting_hex.loc[0]
+        column = starting_hex.loc[1]
+        board = self.board
+
+        hexes_around = []
+        if line >= 1:
+            loc = (line-1, column)
+            if loc not in queue and board[loc[0]][loc[1]] == player_char:
+                hexes_around.append(loc)
+
+        if line <= size - 2:
+            loc = (line+1, column)
+            if loc not in queue and board[loc[0]][loc[1]] == player_char:
+                hexes_around.append(loc)
+
+        if column >= 1:
+            loc = (line, column-1)
+            if loc not in queue and board[loc[0]][loc[1]] == player_char:
+                hexes_around.append(loc)
+
+        if column <= size - 2:
+            loc = (line, column+1)
+            if loc not in queue and board[loc[0]][loc[1]] == player_char:
+                hexes_around.append(loc)
+
+        if column <= size - 2 and line <= size - 2:
+            loc = (line+1, column+1)
+            if loc not in queue and board[loc[0]][loc[1]] == player_char:
+                hexes_around.append(loc)
+
+        if column >= 1 and line >= 1:
+            loc = (line-1, column-1)
+            if loc not in queue and board[loc[0]][loc[1]] == player_char:
+                hexes_around.append(loc)
+
 
 class HexMove(Move):
     '''
@@ -76,3 +115,19 @@ class HexMove(Move):
 
     def __init__(self, loc: tuple[int, int]) -> None:
         self.loc = loc
+
+
+class HexPlayer(Player):
+    '''
+    Class that represents player in the hex game
+
+    Variables:
+        char: a single-character string to represent the player in textual
+            representations of game state
+        up_down: a boolean value that represents which sides of the board
+            the player has
+    '''
+
+    def __init__(self, char: str, up_down: bool) -> None:
+        self.up_down = up_down
+        super().__init__(char)
