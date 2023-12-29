@@ -64,3 +64,18 @@ def test_HexState_make_move_incorrect_hex():
     state = HexState(HexPlayer('1'), HexPlayer('2'), board)
     with raises(ValueError):
         state.make_move(HexMove((0, 2)))
+
+
+def test_HexState_take_hexes_around():
+    board = [
+        [None, '1', '2'],
+        ['1', '2', None],
+        ['2', '1', None]
+    ]
+    queue = []
+    state = HexState(HexPlayer('1'), HexPlayer('2'), board)
+    hexes_around = state._take_hexes_around((1, 1), '2', queue)
+    assert hexes_around == [(0, 2), (2, 0)]
+    queue.append((0, 2))
+    hexes_around = state._take_hexes_around((1, 1), '2', queue)
+    assert hexes_around == [(2, 0)]

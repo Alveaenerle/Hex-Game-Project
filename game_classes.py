@@ -64,14 +64,16 @@ class HexState(State):
         other_player = self._other_player
 
         return HexState(next_player, other_player, new_board)
+    
+    # Helper methods
 
-    def _take_hexes_around(self, starting_hex: "HexMove", player_char: str,
+    def _take_hexes_around(self, starting_loc: tuple(int, int), player_char: str,
                            queue: Iterable[tuple(int, int)]) -> Iterable[tuple(int, int)]:
 
-        size = len(self.board)
-        line = starting_hex.loc[0]
-        column = starting_hex.loc[1]
+        line = starting_loc[0]
+        column = starting_loc[1]
         board = self.board
+        size = len(board)
 
         hexes_around = []
         if line >= 1:
@@ -103,6 +105,8 @@ class HexState(State):
             loc = (line-1, column-1)
             if loc not in queue and board[loc[0]][loc[1]] == player_char:
                 hexes_around.append(loc)
+
+        return hexes_around
 
 
 class HexMove(Move):
