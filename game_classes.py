@@ -50,6 +50,21 @@ class HexState(State):
                     moves.append(HexMove((i, j)))
         return moves
 
+    def make_move(self, move: "HexMove") -> "HexState":
+        line = move.loc[0]
+        column = move.loc[1]
+
+        if self.board[line][column] is not None:
+            raise ValueError("Invalid move!")
+
+        new_board = self.board
+        new_board[line][column] = self._current_player.char
+
+        next_player = self._other_player
+        other_player = self._other_player
+
+        return HexState(next_player, other_player, new_board)
+
 
 class HexMove(Move):
     '''
