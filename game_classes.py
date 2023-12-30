@@ -64,11 +64,39 @@ class HexState(State):
         other_player = self._other_player
 
         return HexState(next_player, other_player, new_board)
-    
+
+    def get_winner(self) -> Player | None:
+        size = len(self.board)
+        board = self.board
+        queue = []
+        visited = []
+        if self._current_player.up_down:
+            for i in range(size):
+                if board[0][i] == self._current_player.char:
+                    queue.append((0, i))
+            while len(queue):
+                curr_hex = queue.pop(0)
+                if curr_hex[0] == size-1:
+                    return self._current_player
+                around = self._take_hexes_around(curr_hex, self._current_player.char, queue, visited)
+                visited.append(curr_hex)
+                queue += around
+        else:
+            for i in range(size):
+                if board[i][0] == self._current_player.char:
+                    queue.append((i, 0))
+            while len(queue):
+                curr_hex = queue.pop(0)
+                if curr_hex[1] == size-1:
+                    return self._current_player
+                around = self._take_hexes_around(curr_hex, self._current_player.char, queue, visited)
+                visited.append(curr_hex)
+                queue += around
+
     # Helper methods
 
     def _take_hexes_around(self, starting_loc: tuple(int, int), player_char: str,
-                           queue: Iterable[tuple(int, int)]) -> Iterable[tuple(int, int)]:
+                           queue: Iterable[tuple(int, int)], visited: Iterable[tuple(int, int)]) -> Iterable[tuple(int, int)]:
 
         line = starting_loc[0]
         column = starting_loc[1]
@@ -78,32 +106,32 @@ class HexState(State):
         hexes_around = []
         if line >= 1:
             loc = (line-1, column)
-            if loc not in queue and board[loc[0]][loc[1]] == player_char:
+            if loc not in queue and loc not in visited and board[loc[0]][loc[1]] == player_char:
                 hexes_around.append(loc)
 
         if line <= size - 2:
             loc = (line+1, column)
-            if loc not in queue and board[loc[0]][loc[1]] == player_char:
+            if loc not in queue and loc not in visited and board[loc[0]][loc[1]] == player_char:
                 hexes_around.append(loc)
 
         if column >= 1:
             loc = (line, column-1)
-            if loc not in queue and board[loc[0]][loc[1]] == player_char:
+            if loc not in queue and loc not in visited and board[loc[0]][loc[1]] == player_char:
                 hexes_around.append(loc)
 
         if column <= size - 2:
             loc = (line, column+1)
-            if loc not in queue and board[loc[0]][loc[1]] == player_char:
+            if loc not in queue and loc not in visited and board[loc[0]][loc[1]] == player_char:
                 hexes_around.append(loc)
 
         if column <= size - 2 and line <= size - 2:
             loc = (line+1, column+1)
-            if loc not in queue and board[loc[0]][loc[1]] == player_char:
+            if loc not in queue and loc not in visited and board[loc[0]][loc[1]] == player_char:
                 hexes_around.append(loc)
 
         if column >= 1 and line >= 1:
             loc = (line-1, column-1)
-            if loc not in queue and board[loc[0]][loc[1]] == player_char:
+            if loc not in queue and loc not in visited and board[loc[0]][loc[1]] == player_char:
                 hexes_around.append(loc)
 
         return hexes_around
