@@ -1,5 +1,4 @@
-from game_classes import Hex, HexState, HexMove
-from two_player_games.player import HexPlayer
+from game_classes import Hex, HexState, HexMove, HexPlayer
 from pytest import raises
 
 
@@ -79,3 +78,39 @@ def test_HexState_take_hexes_around():
     queue.append((0, 2))
     hexes_around = state._take_hexes_around((1, 1), '2', queue, [])
     assert hexes_around == [(2, 0)]
+
+
+def test_HexState_get_winner_typical():
+    board = [
+        [None, '1', '2'],
+        ['1', '2', None],
+        ['2', '1', None]
+    ]
+    player1 = HexPlayer('1', True)
+    player2 = HexPlayer('2', False)
+    state = HexState(player2, player1, board)
+    assert state.get_winner() == player2
+
+
+def test_HexState_get_winner_wrong_sides_connected():
+    board = [
+        [None, '1', '2'],
+        ['1', '2', None],
+        ['1', '2', None]
+    ]
+    player1 = HexPlayer('1', True)
+    player2 = HexPlayer('2', False)
+    state = HexState(player2, player1, board)
+    assert state.get_winner() is None
+
+
+def test_HexState_get_winner_no_winner_typical():
+    board = [
+        [None, '1', '2'],
+        ['1', '2', None],
+        [None, None, None]
+    ]
+    player1 = HexPlayer('1', True)
+    player2 = HexPlayer('2', False)
+    state = HexState(player2, player1, board)
+    assert state.get_winner() is None

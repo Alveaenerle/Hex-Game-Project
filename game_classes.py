@@ -92,6 +92,7 @@ class HexState(State):
                 around = self._take_hexes_around(curr_hex, self._current_player.char, queue, visited)
                 visited.append(curr_hex)
                 queue += around
+        return None
 
     # Helper methods
 
