@@ -1,4 +1,4 @@
-from typing import Iterable, Optional
+from typing import Iterable
 from two_player_games.game import Game
 from two_player_games.move import Move
 from two_player_games.player import Player
@@ -64,6 +64,9 @@ class HexState(State):
         other_player = self._other_player
 
         return HexState(next_player, other_player, new_board)
+
+    def is_finished(self) -> bool:
+        return self.get_winner() is not None
 
     def get_winner(self) -> Player | None:
         size = len(self.board)

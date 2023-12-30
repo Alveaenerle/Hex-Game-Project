@@ -114,3 +114,27 @@ def test_HexState_get_winner_no_winner_typical():
     player2 = HexPlayer('2', False)
     state = HexState(player2, player1, board)
     assert state.get_winner() is None
+
+
+def test_HexState_is_finishe_player_won():
+    board = [
+        [None, '1', '2'],
+        ['1', '2', None],
+        ['2', '1', None]
+    ]
+    player1 = HexPlayer('1', True)
+    player2 = HexPlayer('2', False)
+    state = HexState(player2, player1, board)
+    assert state.is_finished is True
+
+
+def test_HexState_is_finished_game_not_ended():
+    board = [
+        [None, '1', '2'],
+        ['1', '2', None],
+        [None, None, None]
+    ]
+    player1 = HexPlayer('1', True)
+    player2 = HexPlayer('2', False)
+    state = HexState(player2, player1, board)
+    assert state.is_finished is False
