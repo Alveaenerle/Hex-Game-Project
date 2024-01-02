@@ -8,9 +8,9 @@ def test_Hex_create_typical():
     assert hex.first_player.char == '1'
     assert hex.second_player.char == '2'
     assert starting_board == [
-        [False, False, False],
-        [False, False, False],
-        [False, False, False]
+        [None, None, None],
+        [None, None, None],
+        [None, None, None]
     ]
 
 
@@ -20,11 +20,13 @@ def test_HexState_get_moves():
         ['1', None, None],
         ['2', '1', None]
     ]
-    state = HexState(HexPlayer('1'), HexPlayer('2'), board)
+    state = HexState(HexPlayer('1', True), HexPlayer('2', False), board)
     moves = state.get_moves()
     correct_moves = [HexMove((0, 0)), HexMove((1, 1)),
                      HexMove((1, 2)), HexMove((2, 2))]
-    assert moves == correct_moves
+    assert len(moves) == len(correct_moves)
+    for i in range(len(correct_moves)):
+        assert correct_moves[i].loc == moves[i].loc
 
 
 def test_HexState_make_move_typical():
@@ -38,7 +40,7 @@ def test_HexState_make_move_typical():
         ['1', None, '1'],
         ['2', '1', None]
     ]
-    state = HexState(HexPlayer('1'), HexPlayer('2'), board)
+    state = HexState(HexPlayer('1', True), HexPlayer('2', False), board)
     new_state = state.make_move(HexMove((1, 2)))
     assert new_state.board == correct_board
 
@@ -49,7 +51,7 @@ def test_HexState_make_move_incorrect_index():
         ['1', None, None],
         ['2', '1', None]
     ]
-    state = HexState(HexPlayer('1'), HexPlayer('2'), board)
+    state = HexState(HexPlayer('1', True), HexPlayer('2', False), board)
     with raises(IndexError):
         state.make_move(HexMove((3, 2)))
 
@@ -60,7 +62,7 @@ def test_HexState_make_move_incorrect_hex():
         ['1', None, None],
         ['2', '1', None]
     ]
-    state = HexState(HexPlayer('1'), HexPlayer('2'), board)
+    state = HexState(HexPlayer('1', True), HexPlayer('2', False), board)
     with raises(ValueError):
         state.make_move(HexMove((0, 2)))
 
@@ -72,12 +74,12 @@ def test_HexState_take_hexes_around():
         ['2', '1', None]
     ]
     queue = []
-    state = HexState(HexPlayer('1'), HexPlayer('2'), board)
+    state = HexState(HexPlayer('1', True), HexPlayer('2', False), board)
     hexes_around = state._take_hexes_around((1, 1), '2', queue, [])
-    assert hexes_around == [(0, 2), (2, 0)]
+    assert hexes_around[0] in  [(0, 2), (2, 0)] and hexes_around[1] in  [(0, 2), (2, 0)]
     queue.append((0, 2))
     hexes_around = state._take_hexes_around((1, 1), '2', queue, [])
-    assert hexes_around == [(2, 0)]
+    assert hexes_around[0] in [(2, 0)]
 
 
 def test_HexState_get_winner_typical():
@@ -125,7 +127,7 @@ def test_HexState_is_finishe_player_won():
     player1 = HexPlayer('1', True)
     player2 = HexPlayer('2', False)
     state = HexState(player2, player1, board)
-    assert state.is_finished is True
+    assert state.is_finished() is True
 
 
 def test_HexState_is_finished_game_not_ended():
@@ -137,4 +139,4 @@ def test_HexState_is_finished_game_not_ended():
     player1 = HexPlayer('1', True)
     player2 = HexPlayer('2', False)
     state = HexState(player2, player1, board)
-    assert state.is_finished is False
+    assert state.is_finished() is False

@@ -21,12 +21,12 @@ class Hex(Game):
             second_player: the player that will go second (if None is passed, a player will be created)
         '''
 
-        self.first_player = first_player or HexPlayer(self.FIRST_PLAYER_DEFAULT_CHAR)
-        self.second_player = second_player or HexPlayer(self.SECOND_PLAYER_DEFAULT_CHAR)
+        self.first_player = first_player or HexPlayer(self.FIRST_PLAYER_DEFAULT_CHAR, True)
+        self.second_player = second_player or HexPlayer(self.SECOND_PLAYER_DEFAULT_CHAR, False)
 
         starting_board = [[None for j in range(size)] for i in range(size)]
 
-        state = HexState(size, self.first_player, self.second_player, starting_board)
+        state = HexState(self.first_player, self.second_player, starting_board)
 
         super().__init__(state)
 
@@ -34,7 +34,7 @@ class Hex(Game):
 class HexState(State):
     ''' Class that represents a state in the Hex Game '''
     def __init__(self, current_player: "HexPlayer", other_player: "HexPlayer",
-                 board: list(list(str))) -> None:
+                 board: list[list[str]]) -> None:
         ''' Creates the state. Do not call directly. '''
 
         self.board = board
@@ -46,7 +46,7 @@ class HexState(State):
         moves = []
         for i in range(size):
             for j in range(size):
-                if board[i][j] is not None and board[i][j] is not None:
+                if board[i][j] is None:
                     moves.append(HexMove((i, j)))
         return moves
 
@@ -99,8 +99,8 @@ class HexState(State):
 
     # Helper methods
 
-    def _take_hexes_around(self, starting_loc: tuple(int, int), player_char: str,
-                           queue: Iterable[tuple(int, int)], visited: Iterable[tuple(int, int)]) -> Iterable[tuple(int, int)]:
+    def _take_hexes_around(self, starting_loc, player_char: str,
+                           queue, visited):
 
         line = starting_loc[0]
         column = starting_loc[1]
@@ -128,13 +128,13 @@ class HexState(State):
             if loc not in queue and loc not in visited and board[loc[0]][loc[1]] == player_char:
                 hexes_around.append(loc)
 
-        if column <= size - 2 and line <= size - 2:
-            loc = (line+1, column+1)
+        if column >= 1 and line <= size - 2:
+            loc = (line+1, column-1)
             if loc not in queue and loc not in visited and board[loc[0]][loc[1]] == player_char:
                 hexes_around.append(loc)
 
-        if column >= 1 and line >= 1:
-            loc = (line-1, column-1)
+        if column <= size - 2 and line >= 1:
+            loc = (line-1, column+1)
             if loc not in queue and loc not in visited and board[loc[0]][loc[1]] == player_char:
                 hexes_around.append(loc)
 
