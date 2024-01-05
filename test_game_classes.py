@@ -76,7 +76,8 @@ def test_HexState_take_hexes_around():
     queue = []
     state = HexState(HexPlayer('1', True), HexPlayer('2', False), board)
     hexes_around = state._take_hexes_around((1, 1), '2', queue, [])
-    assert hexes_around[0] in  [(0, 2), (2, 0)] and hexes_around[1] in  [(0, 2), (2, 0)]
+    assert (hexes_around[0] in [(0, 2), (2, 0)] and
+            hexes_around[1] in [(0, 2), (2, 0)])
     queue.append((0, 2))
     hexes_around = state._take_hexes_around((1, 1), '2', queue, [])
     assert hexes_around[0] in [(2, 0)]

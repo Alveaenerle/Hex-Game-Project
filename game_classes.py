@@ -10,19 +10,25 @@ class Hex(Game):
     FIRST_PLAYER_DEFAULT_CHAR = '1'
     SECOND_PLAYER_DEFAULT_CHAR = '2'
 
-    def __init__(self, size: int = 11,
-                 first_player: "HexPlayer" = None, second_player: "HexPlayer" = None):
+    def __init__(self, size: int = 11, first_player: "HexPlayer" = None,
+                 second_player: "HexPlayer" = None):
         '''
         Initializes game.
 
         Parameters:
             size: size of the board as number of hexes creating each side
-            first_player: the player that will go first (if None is passed, a player will be created)
-            second_player: the player that will go second (if None is passed, a player will be created)
+
+            first_player: the player that will go first
+            (if None is passed, a player will be created)
+
+            second_player: the player that will go second
+            (if None is passed, a player will be created)
         '''
 
-        self.first_player = first_player or HexPlayer(self.FIRST_PLAYER_DEFAULT_CHAR, True)
-        self.second_player = second_player or HexPlayer(self.SECOND_PLAYER_DEFAULT_CHAR, False)
+        self.first_player = first_player or HexPlayer(
+            self.FIRST_PLAYER_DEFAULT_CHAR, True)
+        self.second_player = second_player or HexPlayer(
+            self.SECOND_PLAYER_DEFAULT_CHAR, False)
 
         starting_board = [[None for j in range(size)] for i in range(size)]
 
@@ -81,7 +87,9 @@ class HexState(State):
                 curr_hex = queue.pop(0)
                 if curr_hex[0] == size-1:
                     return self._current_player
-                around = self._take_hexes_around(curr_hex, self.get_current_player().char, queue, visited)
+                around = self._take_hexes_around(curr_hex,
+                                                 self._current_player().char,
+                                                 queue, visited)
                 visited.append(curr_hex)
                 queue += around
         else:
@@ -92,7 +100,9 @@ class HexState(State):
                 curr_hex = queue.pop(0)
                 if curr_hex[1] == size-1:
                     return self._current_player
-                around = self._take_hexes_around(curr_hex, self.get_current_player().char, queue, visited)
+                around = self._take_hexes_around(curr_hex,
+                                                 self._current_player().char,
+                                                 queue, visited)
                 visited.append(curr_hex)
                 queue += around
         return None
@@ -120,17 +130,19 @@ class HexState(State):
             line += "\033[96m⧵\033[00m"
             text.append(line)
 
-        text[0] += f'\033[4;31m \033[0m'
+        text[0] += '\033[4;31m \033[0m'
         overbar = "\u0305" * size
         line = f'{size*" "}   \033[91m{overbar*2}\033[0m'
         text.append(line)
 
-        return '\n'.join(text) + f'\nCurrent player: {self.get_current_player().char}'
+        return ('\n'.join(text) +
+                f'\nCurrent player: {self._current_player().char}')
 
     # Helper methods
 
-    def _take_hexes_around(self, starting_loc: tuple[int, int], player_char: str,
-                           queue, visited):
+    def _take_hexes_around(self, starting_loc: tuple[int, int],
+                           player_char: str, queue: list[tuple[int, int]],
+                           visited: list[tuple[int, int]]):
 
         line = starting_loc[0]
         column = starting_loc[1]
@@ -140,32 +152,38 @@ class HexState(State):
         hexes_around = []
         if line >= 1:
             loc = (line-1, column)
-            if loc not in queue and loc not in visited and board[loc[0]][loc[1]] == player_char:
+            if (loc not in queue and loc not in visited and
+               board[loc[0]][loc[1]] == player_char):
                 hexes_around.append(loc)
 
         if line <= size - 2:
             loc = (line+1, column)
-            if loc not in queue and loc not in visited and board[loc[0]][loc[1]] == player_char:
+            if (loc not in queue and loc not in visited and
+               board[loc[0]][loc[1]] == player_char):
                 hexes_around.append(loc)
 
         if column >= 1:
             loc = (line, column-1)
-            if loc not in queue and loc not in visited and board[loc[0]][loc[1]] == player_char:
+            if (loc not in queue and loc not in visited and
+               board[loc[0]][loc[1]] == player_char):
                 hexes_around.append(loc)
 
         if column <= size - 2:
             loc = (line, column+1)
-            if loc not in queue and loc not in visited and board[loc[0]][loc[1]] == player_char:
+            if (loc not in queue and loc not in visited and
+               board[loc[0]][loc[1]] == player_char):
                 hexes_around.append(loc)
 
         if column >= 1 and line <= size - 2:
             loc = (line+1, column-1)
-            if loc not in queue and loc not in visited and board[loc[0]][loc[1]] == player_char:
+            if (loc not in queue and loc not in visited and
+               board[loc[0]][loc[1]] == player_char):
                 hexes_around.append(loc)
 
         if column <= size - 2 and line >= 1:
             loc = (line-1, column+1)
-            if loc not in queue and loc not in visited and board[loc[0]][loc[1]] == player_char:
+            if (loc not in queue and loc not in visited and
+               board[loc[0]][loc[1]] == player_char):
                 hexes_around.append(loc)
 
         return hexes_around
@@ -197,23 +215,3 @@ class HexPlayer(Player):
     def __init__(self, char: str, up_down: bool) -> None:
         self.up_down = up_down
         super().__init__(char)
-
-
-board = [
-        ['2', '2', '2', None, None, '1', None, None, None, None],
-        ['2', '2', '2', None, None, '1', None, None, None, None],
-        ['2', '2', '2', None, None, '1', None, None, None, None],
-        ['2', '2', '2', None, None, '1', None, None, None, None],
-        ['2', '2', '2', None, None, '1', None, None, None, None],
-        ['2', '2', '2', None, None, '1', None, None, None, None],
-        ['2', '2', '2', None, None, '1', None, None, None, '2'],
-        ['2', '2', '2', None, None, '1', None, None, '2', None],
-        ['2', '2', '2', '2', '2', '1', None, '2', None, None],
-        ['2', '2', '2', None, '2', '1', '2', None, None, None]
-    ]
-state = HexState(HexPlayer('2', False),HexPlayer('1', True), board)
-print(str(state))
-if state.is_finished():
-    print(state.get_winner().char)
-else:
-    print("Ni huja")
