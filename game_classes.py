@@ -25,6 +25,7 @@ class Hex(Game):
             (if None is passed, a player will be created)
         '''
 
+        size = size or 11
         self.first_player = first_player or HexPlayer(
             self.FIRST_PLAYER_DEFAULT_CHAR, True)
         self.second_player = second_player or HexPlayer(
@@ -35,6 +36,9 @@ class Hex(Game):
         state = HexState(self.first_player, self.second_player, starting_board)
 
         super().__init__(state)
+
+    def get_other_player(self):
+        return self.state._other_player
 
 
 class HexState(State):
@@ -57,6 +61,7 @@ class HexState(State):
         return moves
 
     def make_move(self, move: "HexMove") -> "HexState":
+
         line = move.loc[0]
         column = move.loc[1]
 
@@ -79,36 +84,36 @@ class HexState(State):
         board = self.board
         queue = []
         visited = []
-        if self._current_player.up_down:
+        if self._other_player.up_down:
             for i in range(size):
-                if board[0][i] == self._current_player.char:
+                if board[0][i] == self._other_player.char:
                     queue.append((0, i))
             while len(queue):
                 curr_hex = queue.pop(0)
                 if curr_hex[0] == size-1:
-                    return self._current_player
+                    return self._other_player
                 around = self._take_hexes_around(curr_hex,
-                                                 self._current_player().char,
+                                                 self._other_player.char,
                                                  queue, visited)
                 visited.append(curr_hex)
                 queue += around
         else:
             for i in range(size):
-                if board[i][0] == self._current_player.char:
+                if board[i][0] == self._other_player.char:
                     queue.append((i, 0))
             while len(queue):
                 curr_hex = queue.pop(0)
                 if curr_hex[1] == size-1:
-                    return self._current_player
+                    return self._other_player
                 around = self._take_hexes_around(curr_hex,
-                                                 self._current_player().char,
+                                                 self._other_player.char,
                                                  queue, visited)
                 visited.append(curr_hex)
                 queue += around
         return None
 
     def __str__(self) -> str:
-        text = ['   ']
+        text = ['    ']
 
         size = len(self.board)
         board = self.board
@@ -120,8 +125,8 @@ class HexState(State):
         }
 
         for i in range(size):
-            text[0] += f'\033[4;31m {i}\033[0m'
-            line = f'\033[96m{i*" "} {i} \033[96m⧵\033[00m'
+            text[0] += f'\033[4;31m {chr(i+97)}\033[0m'
+            line = f'\033[96m{i*" "} {i:2} \033[96m⧵\033[00m'
             for j in range(size):
                 if board[i][j] is not None:
                     line += f'{player_hex_dict[board[i][j]]} '
@@ -132,11 +137,10 @@ class HexState(State):
 
         text[0] += '\033[4;31m \033[0m'
         overbar = "\u0305" * size
-        line = f'{size*" "}   \033[91m{overbar*2}\033[0m'
+        line = f'{size*" "}    \033[91m{overbar*2}\033[0m'
         text.append(line)
 
-        return ('\n'.join(text) +
-                f'\nCurrent player: {self._current_player().char}')
+        return '\n'.join(text)
 
     # Helper methods
 
@@ -199,6 +203,9 @@ class HexMove(Move):
 
     def __init__(self, loc: tuple[int, int]) -> None:
         self.loc = loc
+
+    def __eq__(self, __value: "HexMove") -> bool:
+        return self.loc[0] == __value.loc[0] and self.loc[1] == __value.loc[1]
 
 
 class HexPlayer(Player):
