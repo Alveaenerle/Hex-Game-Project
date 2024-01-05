@@ -61,7 +61,7 @@ class HexState(State):
         new_board[line][column] = self._current_player.char
 
         next_player = self._other_player
-        other_player = self._other_player
+        other_player = self._current_player
 
         return HexState(next_player, other_player, new_board)
 
@@ -81,7 +81,7 @@ class HexState(State):
                 curr_hex = queue.pop(0)
                 if curr_hex[0] == size-1:
                     return self._current_player
-                around = self._take_hexes_around(curr_hex, self._current_player.char, queue, visited)
+                around = self._take_hexes_around(curr_hex, self.get_current_player().char, queue, visited)
                 visited.append(curr_hex)
                 queue += around
         else:
@@ -92,14 +92,44 @@ class HexState(State):
                 curr_hex = queue.pop(0)
                 if curr_hex[1] == size-1:
                     return self._current_player
-                around = self._take_hexes_around(curr_hex, self._current_player.char, queue, visited)
+                around = self._take_hexes_around(curr_hex, self.get_current_player().char, queue, visited)
                 visited.append(curr_hex)
                 queue += around
         return None
 
+    def __str__(self) -> str:
+        text = ['   ']
+
+        size = len(self.board)
+        board = self.board
+        player_hex_dict = {
+            self.get_current_player().char: '\033[91m⬢\033[00m'
+            if self.get_current_player().up_down else '\033[96m⬢\033[00m',
+            self._other_player.char: '\033[96m⬢\033[00m'
+            if self.get_current_player().up_down else '\033[91m⬢\033[00m'
+        }
+
+        for i in range(size):
+            text[0] += f'\033[4;31m {i}\033[0m'
+            line = f'\033[96m{i*" "} {i} \033[96m⧵\033[00m'
+            for j in range(size):
+                if board[i][j] is not None:
+                    line += f'{player_hex_dict[board[i][j]]} '
+                else:
+                    line += '⬢ '
+            line += "\033[96m⧵\033[00m"
+            text.append(line)
+
+        text[0] += f'\033[4;31m \033[0m'
+        overbar = "\u0305" * size
+        line = f'{size*" "}   \033[91m{overbar*2}\033[0m'
+        text.append(line)
+
+        return '\n'.join(text) + f'\nCurrent player: {self.get_current_player().char}'
+
     # Helper methods
 
-    def _take_hexes_around(self, starting_loc, player_char: str,
+    def _take_hexes_around(self, starting_loc: tuple[int, int], player_char: str,
                            queue, visited):
 
         line = starting_loc[0]
@@ -167,3 +197,23 @@ class HexPlayer(Player):
     def __init__(self, char: str, up_down: bool) -> None:
         self.up_down = up_down
         super().__init__(char)
+
+
+board = [
+        ['2', '2', '2', None, None, '1', None, None, None, None],
+        ['2', '2', '2', None, None, '1', None, None, None, None],
+        ['2', '2', '2', None, None, '1', None, None, None, None],
+        ['2', '2', '2', None, None, '1', None, None, None, None],
+        ['2', '2', '2', None, None, '1', None, None, None, None],
+        ['2', '2', '2', None, None, '1', None, None, None, None],
+        ['2', '2', '2', None, None, '1', None, None, None, '2'],
+        ['2', '2', '2', None, None, '1', None, None, '2', None],
+        ['2', '2', '2', '2', '2', '1', None, '2', None, None],
+        ['2', '2', '2', None, '2', '1', '2', None, None, None]
+    ]
+state = HexState(HexPlayer('2', False),HexPlayer('1', True), board)
+print(str(state))
+if state.is_finished():
+    print(state.get_winner().char)
+else:
+    print("Ni huja")
