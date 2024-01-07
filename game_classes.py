@@ -6,7 +6,24 @@ from two_player_games.state import State
 
 
 class Hex(Game):
-    ''' Class that represents Hex game '''
+    '''
+    Class that represents Hex game
+
+    Attributes:
+        size : int
+            Size of the board as the number of hexes creating each side
+
+        first_player : HexPlayer
+            Player that started the game
+            This player will have upper and bottom sides of the board
+
+        second_player : HexPlayer
+            Player that moved after first player
+            This player will have left and right sides of the board
+
+        state : HexState
+            Current state of the game
+    '''
     FIRST_PLAYER_DEFAULT_CHAR = '1'
     SECOND_PLAYER_DEFAULT_CHAR = '2'
 
@@ -16,13 +33,16 @@ class Hex(Game):
         Initializes game.
 
         Parameters:
-            size: size of the board as number of hexes creating each side
+            size : int
+                Size of the board as the number of hexes creating each side
 
-            first_player: the player that will go first
-            (if None is passed, a player will be created)
+            first_player : HexPlayer
+                Player that will go first
+                (if None is passed, a player will be created)
 
-            second_player: the player that will go second
-            (if None is passed, a player will be created)
+            second_player : HexPlayer
+                Player that will go second
+                (if None is passed, a player will be created)
         '''
 
         size = size or 11
@@ -38,14 +58,47 @@ class Hex(Game):
         super().__init__(state)
 
     def get_other_player(self):
+        '''
+        Returns other player
+        '''
         return self.state._other_player
 
 
 class HexState(State):
-    ''' Class that represents a state in the Hex Game '''
+    '''
+    Class that represents a state in the Hex Game
+
+    Attributes:
+        _current_player : HexPlayer
+            Player that is making move in this state
+
+        _other_player : HexPlayer
+            Player that waits in this state
+
+        board : list[list[str]]
+            Current state of the board
+            First list contains lines which contain chars
+            Chars symbolizes which player taken hex
+            If None hex is not taken
+    '''
     def __init__(self, current_player: "HexPlayer", other_player: "HexPlayer",
                  board: list[list[str]]) -> None:
-        ''' Creates the state. Do not call directly. '''
+        '''
+        Creates the state. Do not call directly.
+
+        Parameters:
+            _current_player : HexPlayer
+                Player that is making move in this state
+
+            _other_player : HexPlayer
+                Player that waits in this state
+
+            board : list[list[str]]
+                Current state of the board
+                First list contains lines which contain chars
+                Chars symbolizes which player taken hex
+                If None hex is not taken
+        '''
 
         self.board = board
         super().__init__(current_player, other_player)
@@ -61,7 +114,6 @@ class HexState(State):
         return moves
 
     def make_move(self, move: "HexMove") -> "HexState":
-
         line = move.loc[0]
         column = move.loc[1]
 
@@ -147,6 +199,24 @@ class HexState(State):
     def _take_hexes_around(self, starting_loc: tuple[int, int],
                            player_char: str, queue: list[tuple[int, int]],
                            visited: list[tuple[int, int]]):
+        '''
+        Takes all hexes around given hex that belong to the player
+
+        Parammeters:
+            starting_loc : tuple[int, int]
+                Coordinates of starting hex
+
+            player_char : str
+                Which player's hexes we want to take
+
+            queue : list[tuple[int, int]]
+                Used in BFS algorithm
+                Hexes that will be taken the same method
+
+            visited list[tuple[int, int]]
+                Used in BFS algorithm
+                Hexes that was taken before and cannot be taken
+        '''
 
         line = starting_loc[0]
         column = starting_loc[1]
@@ -197,11 +267,19 @@ class HexMove(Move):
     '''
     Class that represents move in the hex game
 
-    Variables:
-        loc: coordinates of hex on the board as a tuple (line, column)
+    Attributes:
+        loc : tuple[int, int]
+            Coordinates of the hex on the board as a tuple[line, column]
     '''
 
     def __init__(self, loc: tuple[int, int]) -> None:
+        '''
+        Creates the move
+
+        Parameters:
+            loc : tuple[int, int]
+                Coordinates of the hex on the board as a tuple[line, column]
+        '''
         self.loc = loc
 
     def __eq__(self, __value: "HexMove") -> bool:
@@ -212,13 +290,26 @@ class HexPlayer(Player):
     '''
     Class that represents player in the hex game
 
-    Variables:
-        char: a single-character string to represent the player in textual
+    Attributes:
+        char: str
+            A single-character string to represent the player in textual
             representations of game state
-        up_down: a boolean value that represents which sides of the board
+        up_down: bool
+            A boolean value that represents which sides of the board
             the player has
     '''
 
     def __init__(self, char: str, up_down: bool) -> None:
+        '''
+        Initializes a player
+
+        Parameters;
+            char: str
+                A single-character string to represent the player in textual
+                representations of game state
+            up_down: bool
+                A boolean value that represents which sides of the board
+                the player has
+        '''
         self.up_down = up_down
         super().__init__(char)

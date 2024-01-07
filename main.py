@@ -22,9 +22,12 @@ def main():
 """)
 
     print(player_char_instruction)
+
+    # Taking player input
     first_player_char = input("First player: ")
     second_player_char = input("Second player: ")
 
+    # Taking player input
     try:
         size = int(input("Board size as an integer value between 2 and 26: "))
         if size <= 1 or size >= 27:
@@ -32,6 +35,7 @@ def main():
     except (TypeError, ValueError):
         size = None
 
+    # Checking if the player chars were given correctly
     if (len(first_player_char) != 1 or len(second_player_char) != 1 or
        first_player_char == second_player_char):
         print(wrong_player_char)
@@ -41,6 +45,7 @@ def main():
         first_player = HexPlayer(first_player_char, True)
         second_player = HexPlayer(second_player_char, False)
 
+    # Initializing game
     game = Hex(size, first_player, second_player)
     size = len(game.state.board)
 
