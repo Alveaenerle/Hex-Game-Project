@@ -1,59 +1,82 @@
-# Dane Autora
-    Imię i nazwisko: Dominik Śledziewski
-    Nr Indeksu: 331447
+# Hex Game in Python
 
-# Cel i opis projektu
-    Projektem jest gra planszowa Hex, w której 2 graczy ma za zadanie połączyc
-    jednym ciągiem swoje strony planszy (górną i dolną lub lewą i prawą)
-    Wygrywa ten gracz który zrobi to jako pierwszy
-    Gra została oparta o framework two_player_games i została zrealizowana w terminalu
 
-# Podział na klasy
-### Hex
-    Główna klasa w grze, która odpowiada za obsługę reszty klas
-    Za jej pośrednictwem następuje komunikacja z całą grą
-    Przechowuje one obecny stan gry typu HexState
-    Dziedziczy ona po klasie Game z frameworku
-### HexState
-    Klasa przedstawiająca stan gry
-    Przechowuje one aktualną planszę wraz z informacją, który gracz wykonuje ruch
-    Odpowiada ona w głównej mierze za logikę gry
-    Dziedziczy ona po klasie State z frameworku
-### HexMove
-    Klasa przedstawiająca ruch na planszy
-    Posiada ona koordynaty Hexa jako krotkę [linia, kolumna]
-    Dziedziczy ona po klasie Move z frameworku
-### HexPlayer
-    Klasa przedstawiająca gracza
-    Gracz posiada swój unikalny symbol (stringa o długości 1)
-    oraz atrybut up_down wskazujący na strony planszy które
-    gracz posiada (jeśli up_down jest prawdą to gracz posiada górną i dolną część planszy)
-    Klasa ta dziedziczy po klasie Player z frameworku
-# Instrukcja
-### Instalacja
-    Należy pobrać repozytorium z 'https://gitlab-stud.elka.pw.edu.pl/dsledzie/Hex'
-### Uruchamianie
-    Aby włączyc grę należy uruchomić plik "main.py"
-    Windows: 'python main.py'
-    Linux: 'python3 main.py'
-    Należy pamiętać aby znajdować się w pobranym folderze 'Hex'
-### Obsługa
-    Na początku należy unikalny napis o długości 1 dla każdego gracza
-    Następnie gra poprosi o podanie wielkości planszy (od 1 do 26)
-    W następnych krokach każdy z graczy będzię musiał podać koordynaty hexa, na którym chce postawić pionka
-    koordynaty należy podać w kolejności: kolumna (litera), linia (liczba)
-# Część refleksyjna
-    Gra została oparta o framework, co znacznie usprawniło tworzenie gry
-    Dwoma największymi trudnościami było efektywne przechowywanie planszy
-    oraz algorytm do znajdowania zwycięzcy
-    W pierwszy przypadku zdecydowałem się na stworzenie listy list
-    pierwsza lista zawiera w sobię liste pól w danej kolumnie
-    plansza składa się z sześciokątów, więc możliwe jest podzielenie jej na kolumny linie
-    Jeśli jakieś pole jest zajęte przez gracza oznacza się je jego symbolem
-    Za implementację znajdowania zwycięzcy odpowiada algorytm BFS, ponieważ jest on efektywny
-    i prosty do zrozumienia
-### Elementy niezrealizowane
-    Graficzny interfejs użytkownika - ze względu na zmienną wielkość planszy,
-    implementacja jest czasochłonna oraz framework stawia na implementacje w terminalu
-    Tryb gry dla jednego gracza - implementacja AI która miałaby szanse wygrać z człowiekiem
-    jest bardzo wymagający
+## 🎯 Project Goal & Description
+This project is a **Hex board game**, where two players compete to connect their designated sides of the board. One player must connect the **top and bottom**, while the other connects the **left and right**. The first player to form a continuous path wins.
+
+The game is implemented using the **two_player_games** framework and runs in the **terminal**.
+
+This project was created during the **1st semester** of university.
+
+---
+
+## 🏗️ Class Structure
+### **Hex**
+- The main class managing the game.
+- Facilitates communication with other classes.
+- Stores the current game state (HexState).
+- Inherits from the `Game` class in the framework.
+
+### **HexState**
+- Represents the current game state.
+- Stores the board and tracks which player is making a move.
+- Responsible for game logic.
+- Inherits from the `State` class in the framework.
+
+### **HexMove**
+- Represents a move on the board.
+- Stores the coordinates of a hex as a tuple `[row, column]`.
+- Inherits from the `Move` class in the framework.
+
+### **HexPlayer**
+- Represents a player.
+- Each player has a unique symbol (a one-character string).
+- Stores a `up_down` attribute indicating whether the player connects **top-bottom** (`True`) or **left-right** (`False`).
+- Inherits from the `Player` class in the framework.
+
+---
+
+## 🛠️ Installation & Usage
+### **Installation**
+Clone the repository from:  
+🔗 `https://github.com/Alveaenerle/Hex-Game-Project.git`
+
+### **Running the Game**
+Run `main.py` to start the game:
+- **Windows:** `python main.py`
+- **Linux:** `python3 main.py`
+
+Make sure you are inside the **Hex** project folder before running the script.
+
+### **How to Play**
+1. Each player enters a **unique one-character symbol**.
+2. The game prompts for the **board size** (from 1 to 26).
+3. Players take turns placing pieces by entering **coordinates**:
+   - **Column (Letter), Row (Number)** (e.g., `C5`).
+4. The game continues until one player forms a **winning path**.
+
+---
+
+## 📝 Reflection
+Using a **framework** significantly streamlined the development process. 
+However, two major challenges emerged:
+
+1. **Efficient Board Representation:**
+   - The board is stored as a **list of lists**, where each sublist represents a **column**.
+   - Since the board consists of **hexagons**, structuring it this way allows for efficient handling.
+   - If a cell is occupied by a player, it is marked with their symbol.
+
+2. **Determining the Winner:**
+   - Implemented using the **BFS (Breadth-First Search) algorithm**.
+   - Chosen for its **efficiency** and **ease of understanding**.
+
+### ❌ Unimplemented Features
+- **Graphical User Interface (GUI) - in progress:**
+  - Due to the **variable board size**, a GUI would be time-consuming to implement.
+  - The framework is designed for **terminal-based** gameplay.
+
+- **Single-Player Mode (AI) - in progress:**
+  - Implementing an AI capable of defeating a human player is a **complex challenge**.
+
+---
+
